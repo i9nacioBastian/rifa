@@ -12,6 +12,7 @@ export default function HomePage({ config, raffleData, onRaffleDataChange, onFin
     const [loadingModal, setLoadingModal] = useState(false);
     const [winnerModal, setWinnerModal] = useState(null);
     const [loserModal, setLoserModal] = useState(null);
+    const [spinningNumber, setSpinningNumber] = useState(null);
     const [errorModal, setErrorModal] = useState('');
 
     // Add Prize State
@@ -40,6 +41,17 @@ export default function HomePage({ config, raffleData, onRaffleDataChange, onFin
 
         setLoadingModal(true);
 
+        // Tombola animation - spin through random numbers
+        let spinCount = 0;
+        const spinInterval = setInterval(() => {
+            const randomNum = availableNumbers[Math.floor(Math.random() * availableNumbers.length)];
+            setSpinningNumber(randomNum);
+            spinCount++;
+            if (spinCount >= 20) {
+                clearInterval(spinInterval);
+            }
+        }, 100);
+
         setTimeout(() => {
             const randomIndex = Math.floor(Math.random() * availableNumbers.length);
             const winnerNumber = availableNumbers[randomIndex];
@@ -58,13 +70,18 @@ export default function HomePage({ config, raffleData, onRaffleDataChange, onFin
                 prize: prize
             };
 
-            onRaffleDataChange({
-                ...raffleData,
-                winners: [...raffleData.winners, newWinner]
-            });
+            setSpinningNumber(winnerNumber);
 
-            setLoadingModal(false);
-            setWinnerModal(newWinner);
+            setTimeout(() => {
+                onRaffleDataChange({
+                    ...raffleData,
+                    winners: [...raffleData.winners, newWinner]
+                });
+
+                setLoadingModal(false);
+                setSpinningNumber(null);
+                setWinnerModal(newWinner);
+            }, 500);
         }, 2200);
     };
 
@@ -85,21 +102,37 @@ export default function HomePage({ config, raffleData, onRaffleDataChange, onFin
 
         setLoadingModal(true);
 
+        // Tombola animation - spin through random numbers
+        let spinCount = 0;
+        const spinInterval = setInterval(() => {
+            const randomNum = availableNumbers[Math.floor(Math.random() * availableNumbers.length)];
+            setSpinningNumber(randomNum);
+            spinCount++;
+            if (spinCount >= 20) {
+                clearInterval(spinInterval);
+            }
+        }, 100);
+
         setTimeout(() => {
             const randomIndex = Math.floor(Math.random() * availableNumbers.length);
             const loserNumber = availableNumbers[randomIndex];
             const participantName = findParticipantName(loserNumber, raffleData.soldNumbers);
 
-            onRaffleDataChange({
-                ...raffleData,
-                losers: [...raffleData.losers, loserNumber]
-            });
+            setSpinningNumber(loserNumber);
 
-            setLoadingModal(false);
-            setLoserModal({
-                number: loserNumber,
-                name: participantName
-            });
+            setTimeout(() => {
+                onRaffleDataChange({
+                    ...raffleData,
+                    losers: [...raffleData.losers, loserNumber]
+                });
+
+                setLoadingModal(false);
+                setSpinningNumber(null);
+                setLoserModal({
+                    number: loserNumber,
+                    name: participantName
+                });
+            }, 500);
         }, 2200);
     };
 
@@ -314,11 +347,62 @@ export default function HomePage({ config, raffleData, onRaffleDataChange, onFin
                 </div>
             )}
 
-            {/* Loading Modal */}
+            {/* Loading Modal - Animal Tombola Animation */}
             <Modal isOpen={loadingModal} onClose={() => { }}>
-                <ModalBody className="text-center py-8">
-                    <i className="fas fa-spinner fa-spin text-6xl text-orange-600 mb-4"></i>
-                    <p className="text-lg font-semibold text-gray-700">Sorteando...</p>
+                <ModalBody className="text-center py-12 bg-gradient-to-b from-blue-50 via-purple-50 to-pink-50">
+                    {/* Animal Tombola Drum Container */}
+                    <div className="relative mx-auto" style={{ width: '300px', height: '300px' }}>
+                        {/* Drum Shadow */}
+                        <div className="absolute inset-0 bg-gradient-to-b from-purple-400 to-pink-400 rounded-full blur-xl opacity-30 transform translate-y-4"></div>
+
+                        {/* Main Drum with Paw Prints */}
+                        <div className="relative w-full h-full">
+                            {/* Drum Body - Rotating Effect with Animal Pattern */}
+                            <div className="absolute inset-0 bg-gradient-to-br from-purple-500 via-pink-400 to-purple-600 rounded-full shadow-2xl border-8 border-yellow-300 animate-spin" style={{ animationDuration: '4s' }}>
+                                {/* Paw Print Decorations */}
+                                <div className="absolute top-12 left-16 text-4xl opacity-40 transform -rotate-12">🐾</div>
+                                <div className="absolute top-20 right-12 text-3xl opacity-30 transform rotate-45">🐾</div>
+                                <div className="absolute bottom-16 left-20 text-3xl opacity-35 transform rotate-12">🐾</div>
+                                <div className="absolute bottom-20 right-16 text-4xl opacity-25 transform -rotate-45">🐾</div>
+
+                                {/* Drum Highlights */}
+                                <div className="absolute top-8 left-12 w-20 h-20 bg-white opacity-20 rounded-full blur-lg"></div>
+                                <div className="absolute bottom-12 right-16 w-16 h-16 bg-purple-900 opacity-15 rounded-full blur-md"></div>
+                            </div>
+
+                            {/* Center Window - Shows Number with Pet Theme */}
+                            <div className="absolute inset-0 flex items-center justify-center">
+                                <div className="bg-white rounded-3xl shadow-2xl p-8 border-4 border-pink-400 z-10 transform hover:scale-105 transition-transform">
+                                    <div className="text-7xl font-black bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent drop-shadow-lg animate-pulse">
+                                        {spinningNumber || '?'}
+                                    </div>
+                                    {/* Small paw print under number */}
+                                    <div className="text-2xl mt-2 opacity-50">🐾</div>
+                                </div>
+                            </div>
+
+                            {/* Drum Rim Decoration */}
+                            <div className="absolute inset-0 rounded-full border-4 border-yellow-200 opacity-60"></div>
+                        </div>
+
+                        {/* Floating Animals */}
+                        <div className="absolute -top-6 -right-6 text-5xl animate-bounce">🐶</div>
+                        <div className="absolute -top-6 -left-6 text-5xl animate-bounce" style={{ animationDelay: '0.3s' }}>🐱</div>
+                        <div className="absolute -bottom-6 -right-6 text-4xl animate-bounce" style={{ animationDelay: '0.6s' }}>🐰</div>
+                        <div className="absolute -bottom-6 -left-6 text-4xl animate-bounce" style={{ animationDelay: '0.9s' }}>🐹</div>
+                    </div>
+
+                    {/* Text */}
+                    <div className="mt-8">
+                        <p className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-2 animate-pulse">
+                            🎰 ¡Girando la Tómbola de Sofía!
+                        </p>
+                        <p className="text-sm text-gray-600 flex items-center justify-center gap-2">
+                            <span>🐾</span>
+                            <span>Esperando el número ganador...</span>
+                            <span>🐾</span>
+                        </p>
+                    </div>
                 </ModalBody>
             </Modal>
 
