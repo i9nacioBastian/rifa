@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sorteo de Rifa - DesignwebIRG.com</title>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="icon" type="image/jpg" href="https://designwebirg.com/assets/img/LOGODSIRG.JPG">
+    <style>
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 0 20px rgba(59, 130, 246, 0.5); }
+            50% { box-shadow: 0 0 40px rgba(59, 130, 246, 0.8); }
+        }
+        @keyframes spin-slow {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        @keyframes bounce-in {
+            0% { transform: scale(0); opacity: 0; }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        @keyframes slide-up {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        @keyframes gradient-shift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        .animate-float { animation: float 3s ease-in-out infinite; }
+        .animate-pulse-glow { animation: pulse-glow 2s ease-in-out infinite; }
+        .animate-spin-slow { animation: spin-slow 3s linear infinite; }
+        .animate-bounce-in { animation: bounce-in 0.5s ease-out; }
+        .animate-slide-up { animation: slide-up 0.5s ease-out; }
+        .gradient-animate {
+            background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+            background-size: 400% 400%;
+            animation: gradient-shift 15s ease infinite;
+        }
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .number {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 42px;
+            height: 42px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-weight: bold;
+            color: #fff;
+            border-radius: 12px;
+            font-size: 15px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .number:hover {
+            transform: translateY(-4px) scale(1.05);
+            box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2);
+        }
+        .winner {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%) !important;
+            animation: bounce-in 0.6s ease-out, pulse-glow 2s ease-in-out infinite;
+        }
+        .loser {
+            background: linear-gradient(135deg, #eb3349 0%, #f45c43 100%) !important;
+            animation: bounce-in 0.6s ease-out;
+        }
+        .unavailable {
+            background: linear-gradient(135deg, #bdc3c7 0%, #95a5a6 100%) !important;
+            color: #ddd !important;
+            opacity: 0.6;
+        }
+        .unavailable-text {
+            text-decoration: line-through;
+            color: #ef4444;
+            opacity: 0.5;
+        }
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+        .card-hover:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+        @media (max-width: 1250px) {
+            .number {
+                width: 38px;
+                height: 38px;
+                font-size: 13px;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-indigo-100 via-purple-50 to-pink-100 min-h-screen">
+    <!-- Particles Background Effect -->
+    <div class="fixed inset-0 overflow-hidden pointer-events-none opacity-20">
+        <div class="absolute top-20 left-10 w-72 h-72 bg-purple-300 rounded-full mix-blend-multiply filter blur-xl animate-float"></div>
+        <div class="absolute top-40 right-10 w-72 h-72 bg-yellow-300 rounded-full mix-blend-multiply filter blur-xl animate-float" style="animation-delay: 2s;"></div>
+        <div class="absolute -bottom-8 left-20 w-72 h-72 bg-pink-300 rounded-full mix-blend-multiply filter blur-xl animate-float" style="animation-delay: 4s;"></div>
+    </div>
+
+    <div class="relative z-10 py-8 px-4">
+        <div class="max-w-7xl mx-auto">
+            <!-- Header -->
+            <div class="mb-8 animate-slide-up">
+                <div class="gradient-animate rounded-3xl shadow-2xl overflow-hidden p-8 text-center relative">
+                    <div class="absolute inset-0 bg-black opacity-20"></div>
+                    <div class="relative z-10">
+                        <a href="https://designwebirg.com/" target="_blank" class="inline-block">
+                            <img src="https://designwebirg.com/assets/img/irglogo.png" alt="DesignWEBIRG" class="h-16 mx-auto transition-transform hover:scale-110">
+                        </a>
+                        <h1 class="text-5xl font-black text-white mt-4 tracking-tight drop-shadow-lg">
+                            🎰 SORTEO DE RIFA 🎉
+                        </h1>
+                        <p class="text-white text-lg mt-2 opacity-90">Sistema Profesional de Sorteos</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 xl:grid-cols-12 gap-6">
+                <!-- Main Section -->
+                <div class="xl:col-span-8 space-y-6">
+                    <!-- Info Card -->
+                    <div class="bg-white rounded-3xl shadow-xl p-6 card-hover animate-slide-up" style="animation-delay: 0.1s;">
+                        <div class="flex items-start gap-4">
+                            <div class="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center">
+                                <i data-lucide="info" class="text-white" width="24" height="24"></i>
+                            </div>
+                            <div class="flex-1">
+                                <h3 class="font-bold text-gray-800 mb-2">💡 Información Importante</h3>
+                                <p class="text-sm text-gray-600 leading-relaxed">
+                                    Carga participantes para mostrar nombres de ganadores. 
+                                    <a href="participantes-ejemplo.json" download class="text-blue-600 hover:text-blue-700 font-semibold underline inline-flex items-center gap-1 transition-colors">
+                                        Descargar formato JSON <i data-lucide="download" width="14" height="14"></i>
+                                    </a>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Configuration Card -->
+                    <div class="bg-white rounded-3xl shadow-xl p-8 card-hover animate-slide-up" style="animation-delay: 0.2s;">
+                        <div class="flex items-center gap-3 mb-6">
+                            <div class="w-10 h-10 bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl flex items-center justify-center">
+                                <i data-lucide="settings" class="text-white" width="20" height="20"></i>
+                            </div>
+                            <h2 class="text-2xl font-bold text-gray-800">Configuración del Sorteo</h2>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                            <div class="group">
+                                <label class="block text-sm font-bold text-gray-700 uppercase tracking-wide mb-2 flex items-center gap-2">
+                                    <i data-lucide="hash" width="16" height="16" class="text-purple-600"></i>
+                                    Total de Números
+                                </label>
+                                <input type="number" id="totalNumbers" value="200" 
+                                       class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-purple-500 focus:ring-4 focus:ring-purple-200 transition-all" 
+                                       min="1" placeholder="Ej: 200">
+                            </div>
+
+                            <div class="group">
+                                <label class="block text-sm font-bold text-gray-700 uppercase tracking-wide mb-2 flex items-center gap-2">
+                                    <i data-lucide="users" width="16" height="16" class="text-purple-600"></i>
+                                    Cargar Participantes
+                                </label>
+                                <input type="file" id="fileInput" accept=".json" 
+                                       class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-purple-500 focus:ring-4 focus:ring-purple-200 transition-all file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-purple-100 file:text-purple-700 file:font-semibold hover:file:bg-purple-200 file:transition-all">
+                            </div>
+                        </div>
+
+                        <div class="flex flex-wrap gap-3 justify-end">
+                            <button onclick="runRaffle()" 
+                                    class="group px-6 py-3 bg-gradient-to-r from-green-500 to-emerald-600 text-white font-bold rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 flex items-center gap-2">
+                                <i data-lucide="trophy" width="20" height="20" class="group-hover:animate-bounce"></i>
+                                Ejecutar Sorteo
+                            </button>
+                            <button onclick="runLosers()" 
+                                    class="group px-6 py-3 bg-gradient-to-r from-red-500 to-rose-600 text-white font-bold rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 flex items-center gap-2">
+                                <i data-lucide="droplet" width="20" height="20" class="group-hover:animate-bounce"></i>
+                                Tirar al Agua
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Unsold Numbers Card -->
+                    <div class="bg-white rounded-3xl shadow-xl p-8 card-hover animate-slide-up" style="animation-delay: 0.3s;">
+                        <div class="flex items-center gap-3 mb-6">
+                            <div class="w-10 h-10 bg-gradient-to-br from-orange-500 to-orange-600 rounded-xl flex items-center justify-center">
+                                <i data-lucide="x-circle" class="text-white" width="20" height="20"></i>
+                            </div>
+                            <h2 class="text-2xl font-bold text-gray-800">Números No Vendidos</h2>
+                        </div>
+
+                        <div class="mb-4">
+                            <input type="text" id="unsoldNumbers" 
+                                   class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-orange-500 focus:ring-4 focus:ring-orange-200 transition-all" 
+                                   placeholder="Ej: 5, 10, 25, 100">
+                        </div>
+
+                        <button id="btn-unsold" onclick="markUnsold()" 
+                                class="group px-6 py-3 bg-gradient-to-r from-gray-600 to-gray-700 text-white font-bold rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 flex items-center gap-2">
+                            <i data-lucide="ban" width="20" height="20" class="group-hover:rotate-180 transition-transform duration-500"></i>
+                            Marcar No Vendidos
+                        </button>
+                    </div>
+
+                    <!-- Numbers Grid -->
+                    <div class="bg-white rounded-3xl shadow-xl p-8 card-hover animate-slide-up" style="animation-delay: 0.4s;">
+                        <div class="flex items-center gap-3 mb-6">
+                            <div class="w-10 h-10 bg-gradient-to-br from-indigo-500 to-indigo-600 rounded-xl flex items-center justify-center">
+                                <i data-lucide="grid-3x3" class="text-white" width="20" height="20"></i>
+                            </div>
+                            <h2 class="text-2xl font-bold text-gray-800">Tabla de Números</h2>
+                        </div>
+                        <div id="sectionsContainer" class="grid grid-cols-1 lg:grid-cols-2 gap-8"></div>
+                    </div>
+                </div>
+
+                <!-- Sidebar -->
+                <div class="xl:col-span-4 space-y-6">
+                    <!-- Prizes Section -->
+                    <div class="bg-white rounded-3xl shadow-xl p-6 card-hover animate-slide-up sticky top-6" style="animation-delay: 0.5s;">
+                        <div class="flex items-center gap-3 mb-6">
+                            <div class="w-10 h-10 bg-gradient-to-br from-yellow-500 to-amber-600 rounded-xl flex items-center justify-center animate-pulse-glow">
+                                <i data-lucide="gift" class="text-white" width="20" height="20"></i>
+                            </div>
+                            <h2 class="text-xl font-bold text-gray-800">Premios</h2>
+                        </div>
+
+                        <div class="space-y-3 mb-4">
+                            <input type="text" id="newPrize" 
+                                   class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-yellow-500 focus:ring-4 focus:ring-yellow-200 transition-all" 
+                                   placeholder="🎁 Nombre del premio">
+                            <button onclick="addPrize()" 
+                                    class="w-full group px-4 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 flex items-center justify-center gap-2">
+                                <i data-lucide="plus-circle" width="20" height="20" class="group-hover:rotate-90 transition-transform duration-300"></i>
+                                Agregar Premio
+                            </button>
+                        </div>
+
+                        <div class="max-h-64 overflow-y-auto rounded-xl border-2 border-gray-100">
+                            <table class="w-full">
+                                <thead class="bg-gradient-to-r from-gray-800 to-gray-700 text-white sticky top-0">
+                                    <tr>
+                                        <th class="text-xs py-3 px-3 font-bold uppercase tracking-wide">Premio</th>
+                                        <th class="text-xs py-3 px-3 font-bold uppercase tracking-wide w-20">Acción</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="prizesTableBody" class="divide-y divide-gray-100">
+                                    <tr id="prize_empty">
+                                        <td colspan="2" class="text-center py-8 text-gray-400 text-sm">
+                                            <i data-lucide="inbox" width="32" height="32" class="mx-auto mb-2 opacity-50"></i>
+                                            <p>No hay premios</p>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Winners Section -->
+                    <div class="bg-white rounded-3xl shadow-xl p-6 card-hover animate-slide-up" style="animation-delay: 0.6s;">
+                        <div class="flex items-center gap-3 mb-6">
+                            <div class="w-10 h-10 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl flex items-center justify-center">
+                                <i data-lucide="trophy" class="text-white animate-float" width="20" height="20"></i>
+                            </div>
+                            <h2 class="text-xl font-bold text-gray-800">Ganadores</h2>
+                        </div>
+
+                        <div class="max-h-64 overflow-y-auto rounded-xl border-2 border-gray-100">
+                            <table class="w-full" id="winnersTable">
+                                <thead class="bg-gradient-to-r from-green-600 to-emerald-600 text-white sticky top-0">
+                                    <tr>
+                                        <th class="text-xs py-3 px-3 font-bold uppercase tracking-wide">Ganador</th>
+                                        <th class="text-xs py-3 px-3 font-bold uppercase tracking-wide">Premio</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-gray-100">
+                                    <tr id="winner_empty">
+                                        <td colspan="2" class="text-center py-8 text-gray-400 text-sm">
+                                            <i data-lucide="user-x" width="32" height="32" class="mx-auto mb-2 opacity-50"></i>
+                                            <p>Sin ganadores aún</p>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Losers Section -->
+                    <div class="bg-white rounded-3xl shadow-xl p-6 card-hover animate-slide-up" style="animation-delay: 0.7s;">
+                        <div class="flex items-center gap-3 mb-6">
+                            <div class="w-10 h-10 bg-gradient-to-br from-red-500 to-rose-600 rounded-xl flex items-center justify-center">
+                                <i data-lucide="droplets" class="text-white" width="20" height="20"></i>
+                            </div>
+                            <h2 class="text-xl font-bold text-gray-800">Perdedores</h2>
+                        </div>
+
+                        <div class="max-h-64 overflow-y-auto rounded-xl border-2 border-gray-100">
+                            <table class="w-full" id="losersTable">
+                                <thead class="bg-gradient-to-r from-red-600 to-rose-600 text-white sticky top-0">
+                                    <tr>
+                                        <th class="text-xs py-3 px-3 font-bold uppercase tracking-wide">Perdedor</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-gray-100">
+                                    <tr id="loser_empty">
+                                        <td class="text-center py-8 text-gray-400 text-sm">
+                                            <i data-lucide="frown" width="32" height="32" class="mx-auto mb-2 opacity-50"></i>
+                                            <p>Sin perdedores aún</p>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="relative z-10 mt-16 gradient-animate text-white text-center py-8">
+        <div class="max-w-7xl mx-auto px-4">
+            <p class="text-lg font-semibold flex items-center justify-center gap-2">
+                Desarrollado con <i data-lucide="heart" class="text-red-400 animate-pulse" width="20" height="20"></i> por 
+                <a href="https://designwebirg.com/" target="_blank" class="font-black hover:underline transition-all hover:scale-110 inline-block">DesignWebIRG.com</a>
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+
+        document.addEventListener('DOMContentLoaded', function () {
+            setTimeout(() => document.getElementById('btn-unsold').click(), 300);
+        });
+
+        let participantes = [];
+
+        function buscarNombrePorNumero(numero) {
+            const participante = participantes.find(p => p.number === parseInt(numero));
+            return participante ? participante.name : 'Desconocido';
+        }
+
+        const sectionsContainer = document.getElementById('sectionsContainer');
+        const winnersTableBody = document.querySelector('#winnersTable tbody');
+        const losersTableBody = document.querySelector('#losersTable tbody');
+        const prizesTableBody = document.getElementById('prizesTableBody');
+        let totalNumbers = parseInt(document.getElementById("totalNumbers").value);
+        let drawnNumbers = [];
+        let prizes = [];
+
+        function shuffle(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        let drawnPrizes = [];
+        let losers = [];
+
+        function createGrid() {
+            sectionsContainer.innerHTML = '';
+            const numbersPerSection = 100;
+            const totalSections = Math.ceil(totalNumbers / numbersPerSection);
+
+            for (let section = 0; section < totalSections; section++) {
+                const sectionDiv = document.createElement('div');
+                sectionDiv.className = 'w-full';
+
+                const sectionTitle = document.createElement('div');
+                sectionTitle.className = 'mb-4 px-4 py-2 bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-xl font-bold text-center shadow-lg';
+                sectionTitle.innerHTML = `<span class="flex items-center justify-center gap-2">Sección ${section + 1}</span>`;
+                sectionDiv.appendChild(sectionTitle);
+
+                const grid = document.createElement('div');
+                grid.className = 'grid grid-cols-10 gap-2 justify-items-center';
+
+                const startNumber = section * numbersPerSection + 1;
+                const endNumber = Math.min((section + 1) * numbersPerSection, totalNumbers);
+
+                for (let i = startNumber; i <= endNumber; i++) {
+                    const div = document.createElement('div');
+                    div.className = 'number animate-bounce-in';
+                    div.style.animationDelay = `${(i - startNumber) * 0.01}s`;
+                    div.id = `num-${i}`;
+                    div.textContent = i;
+                    grid.appendChild(div);
+                }
+
+                sectionDiv.appendChild(grid);
+                sectionsContainer.appendChild(sectionDiv);
+            }
+        }
+
+        function runRaffle() {
+            const total = parseInt(document.getElementById('totalNumbers').value);
+            const winnersCount = 1;
+
+            const availableNumbers = [];
+            for (let i = 1; i <= total; i++) {
+                const numElement = document.getElementById(`num-${i}`);
+                if (!drawnNumbers.includes(i) && !numElement.classList.contains('unavailable')) {
+                    availableNumbers.push(i);
+                }
+            }
+
+            if (availableNumbers.length === 0) {
+                Swal.fire({
+                    title: '⚠️ Error',
+                    text: 'No hay números disponibles para el sorteo.',
+                    icon: 'error',
+                    confirmButtonText: 'OK',
+                    confirmButtonColor: '#ef4444'
+                });
+                return;
+            }
+
+            prizes = shuffle(prizes);
+
+            for (let i = 0; i < winnersCount; i++) {
+                let prize = prizes.shift();
+                if (!prize) {
+                    Swal.fire({
+                        title: '⚠️ Error',
+                        text: 'No hay más premios disponibles.',
+                        icon: 'error',
+                        confirmButtonText: 'OK',
+                        confirmButtonColor: '#ef4444'
+                    });
+                    return;
+                }
+
+                if (availableNumbers.length === 0) {
+                    Swal.fire({
+                        title: '⚠️ Error',
+                        text: 'No hay suficientes números disponibles para continuar el sorteo.',
+                        icon: 'error',
+                        confirmButtonText: 'OK',
+                        confirmButtonColor: '#ef4444'
+                    });
+                    return;
+                }
+
+                Swal.fire({
+                    title: '🎰 Buscando ganador...',
+                    html: '<div class="text-lg">No cierre ni recargue la pantalla...</div>',
+                    allowOutsideClick: false,
+                    allowEscapeKey: false,
+                    timerProgressBar: true,
+                    timer: 2200,
+                    didOpen: () => {
+                        Swal.showLoading()
+                    }
+                });
+
+                setTimeout(function () {
+                    const randomIndex = Math.floor(Math.random() * availableNumbers.length);
+                    const winner = availableNumbers.splice(randomIndex, 1)[0];
+                    drawnNumbers.push(winner);
+                    drawnPrizes.push(prize);
+
+                    const nombreGanador = buscarNombrePorNumero(winner);
+                    const winnerElement = document.getElementById(`num-${winner}`);
+                    if (winnerElement) {
+                        winnerElement.classList.add('winner');
+                        winnerElement.innerHTML = `🏆 ${winner}`;
+                    }
+
+                    Swal.close();
+
+                    Swal.fire({
+                        title: `<b>🎉 ¡TENEMOS UN GANADOR! 🎉</b>`,
+                        html: `
+                            <div class="text-xl mb-4"><strong>${nombreGanador}</strong></div>
+                            <div class="text-sm text-gray-600 mb-2">con el número</div>
+                            <div class="text-6xl font-black text-green-600 my-4">${winner}</div>
+                            <div class="text-sm text-gray-600 mb-2">ha ganado</div>
+                            <div class="text-3xl font-bold text-purple-600">${prize.replace('prize-', '').toUpperCase()}</div>
+                        `,
+                        icon: 'success',
+                        confirmButtonText: '🎊 ¡Genial!',
+                        confirmButtonColor: '#10b981',
+                        background: "#fff url('https://i.gifer.com/nTw.gif') no-repeat",
+                        backdrop: `rgba(0,0,123,0.4) url("https://media.tenor.com/NYzVC0OHCbwAAAAi/pug-dog-dancing.gif") left top no-repeat`
+                    });
+
+                    document.getElementById("totalNumbers").disabled = true;
+
+                    const prizeRow = document.getElementById(`prize-${prize}`);
+                    if (prizeRow) {
+                        prizeRow.classList.add('unavailable-text');
+                        prizeRow.querySelector('.remove-btn').disabled = true;
+                    }
+
+                    if (document.getElementById('winner_empty')) {
+                        document.getElementById('winner_empty').remove();
+                    }
+
+                    const row = document.createElement('tr');
+                    row.className = 'animate-bounce-in hover:bg-green-50 transition-colors';
+                    row.innerHTML = `
+                        <td class="py-3 px-3 text-sm">
+                            <div class="font-semibold">🏆 ${nombreGanador}</div>
+                            <div class="text-xs text-gray-500">N° ${winner}</div>
+                        </td>
+                        <td class="py-3 px-3 text-sm font-medium text-purple-600">${prize}</td>
+                    `;
+                    winnersTableBody.appendChild(row);
+                    lucide.createIcons();
+                }, 2000);
+            }
+        }
+
+        function runLosers() {
+            if (prizes.length < 1) {
+                Swal.fire({
+                    title: '⚠️ Error',
+                    text: 'No hay más premios disponibles.',
+                    icon: 'error',
+                    confirmButtonText: 'OK',
+                    confirmButtonColor: '#ef4444'
+                });
+                return;
+            }
+
+            const total = parseInt(document.getElementById('totalNumbers').value);
+
+            const availableNumbers = [];
+            for (let i = 1; i <= total; i++) {
+                const numElement = document.getElementById(`num-${i}`);
+                if (!drawnNumbers.includes(i) && !numElement.classList.contains('unavailable') && !losers.includes(i)) {
+                    availableNumbers.push(i);
+                }
+            }
+
+            if (availableNumbers.length === 0) {
+                Swal.fire({
+                    title: '⚠️ Error',
+                    text: 'No hay suficientes números disponibles para seleccionar perdedores.',
+                    icon: 'error',
+                    confirmButtonText: 'OK',
+                    confirmButtonColor: '#ef4444'
+                });
+                return;
+            }
+
+            Swal.fire({
+                title: '💧 Buscando perdedor...',
+                html: '<div class="text-lg">No cierre ni recargue la pantalla...</div>',
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+                timerProgressBar: true,
+                timer: 2200,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+
+            setTimeout(function () {
+                const randomIndex = Math.floor(Math.random() * availableNumbers.length);
+                const loser = availableNumbers.splice(randomIndex, 1)[0];
+                losers.push(loser);
+
+                Swal.close();
+
+                const nombrePerdedor = buscarNombrePorNumero(loser);
+
+                Swal.fire({
+                    title: `💦 Número al Agua`,
+                    html: `
+                        <div class="text-xl mb-4"><strong>${nombrePerdedor}</strong></div>
+                        <div class="text-sm text-gray-600 mb-2">con el número</div>
+                        <div class="text-6xl font-black text-red-600 my-4">${loser}</div>
+                        <div class="text-2xl font-bold text-gray-700">ha sido eliminado 😭</div>
+                    `,
+                    icon: 'error',
+                    confirmButtonText: '😢 Entendido',
+                    confirmButtonColor: '#ef4444',
+                    background: "#fff",
+                    backdrop: `rgba(0,0,123,0.4) url("https://media.tenor.com/zL2W2lfFBU8AAAAM/loosers-losers.gif") bottom center no-repeat`
+                });
+
+                document.getElementById("totalNumbers").disabled = true;
+
+                const loserElement = document.getElementById(`num-${loser}`);
+                if (loserElement) {
+                    loserElement.classList.add('loser');
+                    loserElement.innerHTML = `💧 ${loser}`;
+                }
+
+                if (document.getElementById('loser_empty')) {
+                    document.getElementById('loser_empty').remove();
+                }
+
+                const row = document.createElement('tr');
+                row.className = 'animate-bounce-in hover:bg-red-50 transition-colors';
+                row.innerHTML = `
+                    <td class="py-3 px-3 text-sm">
+                        <div class="font-semibold">😭 ${nombrePerdedor}</div>
+                        <div class="text-xs text-gray-500">N° ${loser}</div>
+                    </td>
+                `;
+                losersTableBody.appendChild(row);
+                lucide.createIcons();
+            }, 2000);
+        }
+
+        function markUnsold() {
+            const allNumbers = document.querySelectorAll('.number.unavailable');
+            allNumbers.forEach(numElement => {
+                numElement.classList.remove('unavailable');
+            });
+
+            let counter = 0;
+            let unsoldNumbers = document.getElementById('unsoldNumbers').value.split(',').map(num => num.trim());
+            unsoldNumbers.forEach(num => {
+                let numElement = document.getElementById(`num-${num}`);
+                if (numElement) {
+                    numElement.classList.add('unavailable');
+                    counter++;
+                }
+            });
+            return counter;
+        }
+
+        function addPrize() {
+            const newPrize = document.getElementById('newPrize').value;
+            if (newPrize !== "") {
+                prizes.push(newPrize);
+                if (document.getElementById('prize_empty')) {
+                    document.getElementById('prize_empty').remove();
+                }
+
+                const row = document.createElement('tr');
+                row.className = 'animate-bounce-in hover:bg-gray-50 transition-colors';
+                row.id = `prize-${newPrize}`;
+                row.innerHTML = `
+                    <td class="py-3 px-3 text-sm font-medium text-gray-800">${newPrize}</td>
+                    <td class="py-3 px-3 text-center">
+                        <button class="p-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-all transform hover:scale-110 remove-btn" onclick="removePrize('${newPrize}')">
+                            <i data-lucide="trash-2" width="16" height="16"></i>
+                        </button>
+                    </td>
+                `;
+                prizesTableBody.appendChild(row);
+                lucide.createIcons();
+
+                document.getElementById('newPrize').value = '';
+
+                Swal.fire({
+                    title: '✅ Premio Agregado',
+                    text: `"${newPrize}" ha sido agregado correctamente`,
+                    icon: 'success',
+                    timer: 1500,
+                    showConfirmButton: false,
+                    toast: true,
+                    position: 'top-end'
+                });
+            } else {
+                Swal.fire({
+                    title: '⚠️ Error de Validación',
+                    text: 'Nombre de premio requerido. Corrija e intente nuevamente',
+                    icon: 'warning',
+                    confirmButtonText: 'OK',
+                    confirmButtonColor: '#f59e0b'
+                });
+                document.getElementById('newPrize').focus();
+            }
+        }
+
+        function removePrize(prize) {
+            Swal.fire({
+                title: '¿Eliminar premio?',
+                text: `¿Estás seguro de eliminar "${prize}"?`,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'Sí, eliminar',
+                cancelButtonText: 'Cancelar',
+                confirmButtonColor: '#ef4444',
+                cancelButtonColor: '#6b7280'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    prizes = prizes.filter(p => p !== prize);
+
+                    const prizeRow = document.getElementById(`prize-${prize}`);
+                    if (prizeRow) {
+                        prizeRow.classList.add('opacity-0', 'scale-0');
+                        setTimeout(() => prizeRow.remove(), 300);
+                    }
+
+                    if (prizes.length < 1) {
+                        if (!document.getElementById('prize_empty')) {
+                            setTimeout(() => {
+                                const row = document.createElement('tr');
+                                row.id = `prize_empty`;
+                                row.innerHTML = `
+                                    <td colspan="2" class="text-center py-8 text-gray-400 text-sm animate-slide-up">
+                                        <i data-lucide="inbox" width="32" height="32" class="mx-auto mb-2 opacity-50"></i>
+                                        <p>No hay premios</p>
+                                    </td>
+                                `;
+                                prizesTableBody.appendChild(row);
+                                lucide.createIcons();
+                            }, 300);
+                        }
+                    }
+
+                    Swal.fire({
+                        title: '🗑️ Eliminado',
+                        text: 'Premio eliminado correctamente',
+                        icon: 'success',
+                        timer: 1500,
+                        showConfirmButton: false,
+                        toast: true,
+                        position: 'top-end'
+                    });
+                }
+            });
+        }
+
+        document.getElementById('totalNumbers').addEventListener('input', (event) => {
+            totalNumbers = parseInt(event.target.value);
+            drawnNumbers = [];
+            drawnPrizes = [];
+            createGrid();
+        });
+
+        document.getElementById('fileInput').addEventListener('change', function (event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    try {
+                        participantes = JSON.parse(e.target.result);
+                        console.log('Participantes cargados:', participantes);
+                        Swal.fire({
+                            title: '📁 Archivo Cargado',
+                            text: `${participantes.length} participantes cargados correctamente`,
+                            icon: 'success',
+                            confirmButtonText: '¡Genial!',
+                            confirmButtonColor: '#10b981'
+                        });
+                    } catch (error) {
+                        console.error('Error al leer el archivo:', error);
+                        Swal.fire({
+                            title: '❌ Error',
+                            text: 'Hubo un error al cargar el archivo JSON.',
+                            icon: 'error',
+                            confirmButtonText: 'OK',
+                            confirmButtonColor: '#ef4444'
+                        });
+                    }
+                };
+                reader.readAsText(file);
+            }
+        });
+
+        createGrid();
+    </script>
+</body>
+</html>
