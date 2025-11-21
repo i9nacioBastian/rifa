@@ -104,7 +104,7 @@ export default function SalesManager({
             </div>
 
             {/* Stats */}
-            <div className="grid grid-cols-3 gap-2 mb-4">
+            <div className="grid grid-cols-3 gap-2 mb-4" >
                 <div className="bg-green-50 p-3 rounded-lg text-center border border-green-200">
                     <div className="text-2xl font-bold text-green-600">{soldNumbersList.length}</div>
                     <div className="text-xs text-gray-600">Vendidos</div>
@@ -126,8 +126,8 @@ export default function SalesManager({
                 <button
                     onClick={toggleSelectionMode}
                     className={`w-full px-4 py-3 rounded-xl font-semibold shadow-lg flex items-center justify-center gap-2 transition transform hover:-translate-y-0.5 ${selectionMode
-                            ? 'bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white'
-                            : 'bg-gradient-to-r from-teal-500 to-cyan-600 hover:from-teal-600 hover:to-cyan-700 text-white'
+                        ? 'bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white'
+                        : 'bg-gradient-to-r from-teal-500 to-cyan-600 hover:from-teal-600 hover:to-cyan-700 text-white'
                         }`}
                 >
                     <i className={`fas ${selectionMode ? 'fa-check-circle' : 'fa-hand-pointer'}`}></i>
@@ -198,41 +198,43 @@ export default function SalesManager({
 
             {/* Sold Numbers List */}
             <div className="overflow-hidden rounded-lg border border-gray-200">
-                <table className="w-full">
-                    <thead className="bg-gradient-to-r from-teal-500 to-cyan-600 text-white">
-                        <tr>
-                            <th className="py-2 px-3 text-xs font-bold">N°</th>
-                            <th className="py-2 px-3 text-xs font-bold">COMPRADOR</th>
-                            <th className="py-2 px-3 text-xs font-bold">TELÉFONO</th>
-                            <th className="py-2 px-3 text-xs font-bold">ACCIÓN</th>
-                        </tr>
-                    </thead>
-                    <tbody className="text-sm">
-                        {soldNumbersList.length === 0 ? (
+                <div className="max-h-96 overflow-y-auto">
+                    <table className="w-full">
+                        <thead className="bg-gradient-to-r from-teal-500 to-cyan-600 text-white sticky top-0 z-10">
                             <tr>
-                                <td colSpan="4" className="text-center py-3 text-gray-500">
-                                    No hay números vendidos
-                                </td>
+                                <th className="py-2 px-3 text-xs font-bold">N°</th>
+                                <th className="py-2 px-3 text-xs font-bold">COMPRADOR</th>
+                                <th className="py-2 px-3 text-xs font-bold">TELÉFONO</th>
+                                <th className="py-2 px-3 text-xs font-bold">ACCIÓN</th>
                             </tr>
-                        ) : (
-                            soldNumbersList.map((sale) => (
-                                <tr key={sale.number} className="border-b border-gray-100 last:border-0">
-                                    <td className="py-2 px-3 font-bold text-teal-600">{sale.number}</td>
-                                    <td className="py-2 px-3">{sale.name}</td>
-                                    <td className="py-2 px-3 text-xs">{sale.phone || '-'}</td>
-                                    <td className="py-2 px-3 text-center">
-                                        <button
-                                            onClick={() => handleRemoveSale(sale.number)}
-                                            className="px-2 py-1 rounded text-white text-xs bg-red-500 hover:bg-red-600"
-                                        >
-                                            <i className="fas fa-trash"></i>
-                                        </button>
+                        </thead>
+                        <tbody className="text-sm">
+                            {soldNumbersList.length === 0 ? (
+                                <tr>
+                                    <td colSpan="4" className="text-center py-3 text-gray-500">
+                                        No hay números vendidos
                                     </td>
                                 </tr>
-                            ))
-                        )}
-                    </tbody>
-                </table>
+                            ) : (
+                                soldNumbersList.map((sale) => (
+                                    <tr key={sale.number} className="border-b border-gray-100 last:border-0">
+                                        <td className="py-2 px-3 font-bold text-teal-600">{sale.number}</td>
+                                        <td className="py-2 px-3">{sale.name}</td>
+                                        <td className="py-2 px-3 text-xs">{sale.phone || '-'}</td>
+                                        <td className="py-2 px-3 text-center">
+                                            <button
+                                                onClick={() => handleRemoveSale(sale.number)}
+                                                className="px-2 py-1 rounded text-white text-xs bg-red-500 hover:bg-red-600"
+                                            >
+                                                <i className="fas fa-trash"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                ))
+                            )}
+                        </tbody>
+                    </table>
+                </div>
             </div>
 
             {/* Assign Modal */}

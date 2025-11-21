@@ -1,7 +1,7 @@
-export default function LosersList({ losers, participants }) {
+export default function LosersList({ losers, soldNumbers, onRemoveLoser }) {
     const getParticipantName = (number) => {
-        const participant = participants.find(p => p.number === number);
-        return participant ? participant.name : 'Desconocido';
+        if (!soldNumbers || !soldNumbers[number]) return 'Desconocido';
+        return soldNumbers[number].name;
     };
 
     return (
@@ -17,12 +17,13 @@ export default function LosersList({ losers, participants }) {
                     <thead className="bg-gradient-to-r from-red-500 to-pink-600 text-white">
                         <tr>
                             <th className="py-2 px-3 text-xs font-bold">PERDEDOR NÚMERO</th>
+                            {onRemoveLoser && <th className="py-2 px-3 text-xs font-bold">ACCIÓN</th>}
                         </tr>
                     </thead>
                     <tbody className="text-sm">
                         {losers.length === 0 ? (
                             <tr>
-                                <td className="text-center py-3 text-gray-500">
+                                <td colSpan={onRemoveLoser ? "2" : "1"} className="text-center py-3 text-gray-500">
                                     No existen registros
                                 </td>
                             </tr>
@@ -38,6 +39,17 @@ export default function LosersList({ losers, participants }) {
                                             </div>
                                         </div>
                                     </td>
+                                    {onRemoveLoser && (
+                                        <td className="py-2 px-3 text-center">
+                                            <button
+                                                onClick={() => onRemoveLoser(loser)}
+                                                className="text-red-500 hover:text-red-700 transition"
+                                                title="Eliminar Perdedor"
+                                            >
+                                                <i className="fas fa-trash-alt"></i>
+                                            </button>
+                                        </td>
+                                    )}
                                 </tr>
                             ))
                         )}

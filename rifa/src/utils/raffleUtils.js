@@ -9,20 +9,41 @@ export function shuffle(array) {
 }
 
 // Get available numbers for raffle
-export function getAvailableNumbers(total, drawnNumbers, unsoldNumbers, losers) {
+export function getAvailableNumbers(total, drawnNumbers, unsoldNumbers, losers, soldNumbers = {}, isFinalized = false) {
   const available = [];
-  for (let i = 1; i <= total; i++) {
-    if (!drawnNumbers.includes(i) && !unsoldNumbers.has(i) && !losers.includes(i)) {
-      available.push(i);
+  
+  // Helper to check if number is unavailable
+  const isUnavailable = (num) => {
+    if (unsoldNumbers instanceof Set) {
+      return unsoldNumbers.has(num);
+    }
+    return Array.isArray(unsoldNumbers) && unsoldNumbers.includes(num);
+  };
+
+  if (isFinalized) {
+    // If finalized, only consider SOLD numbers
+    const sold = Object.keys(soldNumbers).map(Number);
+    for (const num of sold) {
+      if (!drawnNumbers.includes(num) && !losers.includes(num)) {
+        available.push(num);
+      }
+    }
+  } else {
+    // If not finalized, consider all numbers except unavailable/drawn/losers
+    for (let i = 1; i <= total; i++) {
+      if (!drawnNumbers.includes(i) && !isUnavailable(i) && !losers.includes(i)) {
+        available.push(i);
+      }
     }
   }
+  
   return available;
 }
 
 // Find participant name by number
-export function findParticipantName(number, participants) {
-  const participant = participants.find(p => p.number === parseInt(number));
-  return participant ? participant.name : 'Desconocido';
+export function findParticipantName(number, soldNumbers) {
+  if (!soldNumbers || !soldNumbers[number]) return 'Desconocido';
+  return soldNumbers[number].name;
 }
 
 // Generate sections of numbers (100 per section)

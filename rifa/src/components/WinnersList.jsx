@@ -1,4 +1,4 @@
-export default function WinnersList({ winners }) {
+export default function WinnersList({ winners, onRemoveWinner }) {
     return (
         <div className="glass-card rounded-3xl p-6 animate-fadeIn">
             <div className="bg-gradient-to-r from-teal-500 to-cyan-600 text-white text-center py-3 rounded-xl mb-4">
@@ -13,12 +13,13 @@ export default function WinnersList({ winners }) {
                         <tr>
                             <th className="py-2 px-3 text-xs font-bold">GANADOR</th>
                             <th className="py-2 px-3 text-xs font-bold">PREMIO</th>
+                            {onRemoveWinner && <th className="py-2 px-3 text-xs font-bold">ACCIÓN</th>}
                         </tr>
                     </thead>
                     <tbody className="text-sm">
                         {winners.length === 0 ? (
                             <tr>
-                                <td colSpan="2" className="text-center py-3 text-gray-500">
+                                <td colSpan={onRemoveWinner ? "3" : "2"} className="text-center py-3 text-gray-500">
                                     No existen registros
                                 </td>
                             </tr>
@@ -35,6 +36,17 @@ export default function WinnersList({ winners }) {
                                         </div>
                                     </td>
                                     <td className="py-2 px-3 font-medium">{winner.prize}</td>
+                                    {onRemoveWinner && (
+                                        <td className="py-2 px-3 text-center">
+                                            <button
+                                                onClick={() => onRemoveWinner(winner)}
+                                                className="text-red-500 hover:text-red-700 transition"
+                                                title="Eliminar Ganador"
+                                            >
+                                                <i className="fas fa-trash-alt"></i>
+                                            </button>
+                                        </td>
+                                    )}
                                 </tr>
                             ))
                         )}
