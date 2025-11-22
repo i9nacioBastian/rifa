@@ -172,10 +172,10 @@ export default function HomePage({ config, raffleData, onRaffleDataChange, onFin
     const noPrizesLeft = availablePrizes.length === 0;
 
     return (
-        <div className="pb-20 px-2 md:px-4">
+        <div className="pb-20 px-3 md:px-4">
             {/* Header Info */}
-            <div className="glass-card rounded-3xl p-6 mb-6 animate-fadeIn relative overflow-hidden">
-                <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-orange-400 via-red-500 to-pink-500"></div>
+            <div className="glass-card rounded-md p-6 mb-6 animate-fadeIn relative overflow-hidden">
+                <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-gray-700 via-gray-800 to-gray-800"></div>
 
                 <div className="flex justify-between items-start mb-4">
                     <div>
@@ -187,7 +187,7 @@ export default function HomePage({ config, raffleData, onRaffleDataChange, onFin
                     </div>
                     <div className="text-right">
                         <div className="text-3xl font-bold text-orange-600">${config.numberPrice}</div>
-                        <div className="text-xs text-gray-400 uppercase tracking-wider">Valor Ticket</div>
+                        <div className="text-xs text-gray-400 uppercase tracking-wider">VALOR NÚMERO</div>
                     </div>
                 </div>
 
@@ -296,20 +296,6 @@ export default function HomePage({ config, raffleData, onRaffleDataChange, onFin
                 </h3>
 
                 {/* Marking Mode Toggle */}
-                {!isFinalized && (
-                    <div className="mb-4">
-                        <button
-                            onClick={() => onRaffleDataChange({ ...raffleData, markingMode: !raffleData.markingMode })}
-                            className={`w-full px-4 py-2 rounded-xl font-semibold shadow-lg transition text-sm ${raffleData.markingMode
-                                ? 'bg-gradient-to-r from-red-500 to-pink-500 text-white'
-                                : 'bg-gradient-to-r from-gray-200 to-gray-300 text-gray-700'
-                                }`}
-                        >
-                            <i className={`fas ${raffleData.markingMode ? 'fa-times-circle' : 'fa-ban'} mr-2`}></i>
-                            {raffleData.markingMode ? 'Desactivar' : 'Marcar'} No Vendidos
-                        </button>
-                    </div>
-                )}
 
                 {/* Number Grid Component */}
                 <NumberGrid

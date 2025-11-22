@@ -93,19 +93,12 @@ export default function StoryPreview({
     const sections = generateSections();
 
     return (
-        <div className="glass-card rounded-3xl p-6 animate-fadeIn">
-            <div className="bg-gradient-to-r from-orange-500 to-amber-600 text-white text-center py-3 rounded-xl mb-4">
-                <h6 className="font-bold text-sm uppercase tracking-wide">
-                    <i className="fas fa-mobile-alt mr-2"></i>Vista Previa para Historias
-                </h6>
-            </div>
+        <div className="glass-card rounded-3xl px-3 py-2 animate-fadeIn">
 
-            <p className="text-sm text-gray-600 mb-4 text-center">
-                {sections.length} {sections.length === 1 ? 'imagen' : 'imágenes'} de 100 números cada una
-            </p>
+
 
             {/* Story Previews */}
-            <div className="mb-4 space-y-4 max-h-[600px] overflow-y-auto">
+            <div className="mb-4 space-y-4 max-h-[700px] overflow-y-auto">
                 {sections.map((section, index) => (
                     <div key={section.id} className="flex flex-col items-center">
                         <p className="text-xs text-gray-500 mb-2 font-semibold">
@@ -113,11 +106,11 @@ export default function StoryPreview({
                         </p>
                         <div
                             ref={(el) => (storyRefs.current[index] = el)}
-                            className="relative w-[300px] h-[533px] bg-white overflow-hidden shadow-lg"
+                            className="relative w-[370px] h-[670px] bg-white overflow-hidden shadow-lg"
                             style={{ aspectRatio: '9/16' }}
                         >
                             {/* Header with Pet Image */}
-                            <div className="relative h-[180px] bg-gradient-to-br from-pink-300 via-purple-300 to-yellow-200 overflow-hidden">
+                            <div className="relative h-[230px] bg-gradient-to-br from-pink-300 via-purple-300 to-yellow-200 overflow-hidden">
                                 {petImage && (
                                     <img
                                         src={petImage}
@@ -138,8 +131,8 @@ export default function StoryPreview({
 
                             {/* Price/Info Section */}
                             <div className="bg-gradient-to-r from-pink-400 to-purple-400 py-3 text-center">
-                                <p className="text-white font-bold text-xl">
-                                    Número $2000
+                                <p className="text-white font-bold text-md uppercase">
+                                    VALOR POR NÚMERO $2000
                                 </p>
                             </div>
 
@@ -151,7 +144,7 @@ export default function StoryPreview({
                                         return (
                                             <div
                                                 key={num}
-                                                className={`${getNumberColor(status)} text-white font-bold text-[9px] w-[24px] h-[24px] rounded flex items-center justify-center shadow-sm relative`}
+                                                className={`${getNumberColor(status)} text-white font-bold text-[11px] w-[28px] h-[28px] rounded-full flex items-center justify-center shadow-sm relative`}
                                             >
                                                 {status === 'winner' && (
                                                     <i className="fas fa-heart absolute text-[6px] text-pink-300 top-0 left-0"></i>
@@ -193,7 +186,9 @@ export default function StoryPreview({
                     </div>
                 ))}
             </div>
-
+            <p className="text-sm text-gray-600 mb-4 text-center">
+                {sections.length} {sections.length === 1 ? 'imagen' : 'imágenes'} de 100 números cada una
+            </p>
             {/* Download Button */}
             <button
                 onClick={handleDownloadAll}

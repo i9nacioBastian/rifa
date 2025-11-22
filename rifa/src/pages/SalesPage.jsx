@@ -22,15 +22,14 @@ export default function SalesPage({ config, raffleData, onRaffleDataChange }) {
             {/* Revenue Summary Card */}
             <div className="glass-card rounded-3xl p-6 mb-4 bg-gradient-to-br from-green-50 to-emerald-50 border-2 border-green-200">
                 <div className="text-center mb-4">
-                    <p className="text-sm font-semibold text-gray-600 mb-2">
-                        <i className="fas fa-dollar-sign mr-2 text-green-600"></i>
-                        Total Ganancias
+                    <p className="text-sm font-semibold text-gray-600 mb-2 uppercase">
+                        Total Recaudado
                     </p>
                     <div className="flex items-center justify-center gap-3">
-                        <p className="text-4xl font-bold text-green-600">
+                        <p className="text-3xl font-bold text-green-600">
                             ${totalRevenue.toLocaleString('es-CL')}
                         </p>
-                        <p className="text-2xl font-semibold text-gray-400">Meta</p>
+                        <p className="text-2xl font-semibold text-gray-400">de</p>
                         <p className="text-3xl font-bold text-gray-600">
                             ${potentialRevenue.toLocaleString('es-CL')}
                         </p>
@@ -49,7 +48,7 @@ export default function SalesPage({ config, raffleData, onRaffleDataChange }) {
                             ></div>
                         </div>
                         <p className="text-xs text-gray-500 mt-1">
-                            {((soldCount / config.totalNumbers) * 100).toFixed(1)}% vendido
+                            {((soldCount / config.totalNumbers) * 100).toFixed(1)}% de números vendidos
                         </p>
                     </div>
                 </div>
@@ -63,7 +62,7 @@ export default function SalesPage({ config, raffleData, onRaffleDataChange }) {
                     <div className="text-center">
                         <p className="text-sm text-gray-600">Disponibles</p>
                         <p className="text-2xl font-bold text-orange-600">{config.totalNumbers - soldCount}</p>
-                        <p className="text-xs text-gray-500">Precio: ${config.numberPrice.toLocaleString('es-CL')}</p>
+                        <p className="text-xs text-gray-500">Valor número: ${config.numberPrice.toLocaleString('es-CL')}</p>
                     </div>
                 </div>
             </div>

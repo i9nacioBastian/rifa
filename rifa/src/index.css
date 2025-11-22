@@ -93,3 +93,18 @@ body {
 ::-webkit-scrollbar-thumb:hover {
   background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
 }
+
+/* SideNav Styles */
+@media (min-width: 768px) {
+  .sidenav-collapsed + div {
+    margin-left: 4rem !important;
+  }
+}
+
+@media (max-width: 767px) {
+  /* On mobile, ensure content has no left margin */
+  .main-content-wrapper {
+    margin-left: 0 !important;
+  }
+}
+

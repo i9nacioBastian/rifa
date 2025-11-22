@@ -21,7 +21,7 @@ export default function NumberGrid({
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {sections.map((section) => (
                 <div key={section.id} className="space-y-2">
-                    <h3 className="text-sm font-semibold text-gray-600">
+                    <h3 className="text-sm uppercase font-semibold text-gray-600">
                         Números {section.startNumber} - {section.endNumber}
                     </h3>
                     <div className="overflow-x-auto pb-2">

@@ -5,11 +5,11 @@ export default function BottomNav({ isFinalized }) {
         { path: '/', icon: 'fa-th', label: 'Números' },
         { path: '/sales', icon: 'fa-shopping-cart', label: 'Ventas' },
         { path: '/preview', icon: 'fa-eye', label: 'Preview' },
-        { path: '/prizes', icon: 'fa-gift', label: 'Premios', disabled: isFinalized }
+        { path: '/prizes', icon: 'fa-gift', label: 'Premios' }
     ];
 
     return (
-        <nav className="fixed bottom-0 left-0 right-0 bg-white border-t-2 border-gray-200 shadow-lg z-50">
+        <nav className="fixed bottom-[-0px] left-0 right-0 bg-white border-t-2 border-gray-200 shadow-lg z-50">
             <div className="flex justify-around items-center h-16 max-w-screen-xl mx-auto">
                 {navItems.map((item) => (
                     <NavLink
