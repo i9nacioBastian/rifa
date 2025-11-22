@@ -1,4 +1,5 @@
 import { useRef, useState } from 'react';
+import { useTheme } from '../context/ThemeContext';
 import html2canvas from 'html2canvas';
 
 export default function StoryPreview({
@@ -8,9 +9,13 @@ export default function StoryPreview({
     winners,
     unsoldNumbers,
     soldNumbers,
-    losers
+    losers,
+    raffleName = 'RIFA SOFIA',
+    numberPrice = 2000
 }) {
+    const { theme } = useTheme();
     const [isDownloading, setIsDownloading] = useState(false);
+    const [currentPage, setCurrentPage] = useState(0);
     const storyRefs = useRef([]);
 
     // Generate sections of 100 numbers
@@ -50,15 +55,15 @@ export default function StoryPreview({
     const getNumberColor = (status) => {
         switch (status) {
             case 'winner':
-                return 'bg-gradient-to-br from-emerald-500 to-green-600';
+                return `bg-gradient-to-br ${theme.colors.winner.start} ${theme.colors.winner.end}`;
             case 'loser':
-                return 'bg-gradient-to-br from-red-500 to-pink-600';
+                return `bg-gradient-to-br ${theme.colors.loser.start} ${theme.colors.loser.end}`;
             case 'sold':
-                return 'bg-gradient-to-br from-blue-500 to-indigo-600';
+                return `bg-gradient-to-br ${theme.colors.sold.start} ${theme.colors.sold.end}`;
             case 'unavailable':
                 return 'bg-gray-400';
             default:
-                return 'bg-gradient-to-br from-orange-500 to-amber-500';
+                return `bg-gradient-to-br ${theme.colors.primary.start} ${theme.colors.primary.end}`;
         }
     };
 
@@ -92,23 +97,66 @@ export default function StoryPreview({
 
     const sections = generateSections();
 
+    const nextPage = () => {
+        setCurrentPage((prev) => (prev + 1) % sections.length);
+    };
+
+    const prevPage = () => {
+        setCurrentPage((prev) => (prev - 1 + sections.length) % sections.length);
+    };
+
+    const goToPage = (index) => {
+        setCurrentPage(index);
+    };
+
     return (
         <div className="glass-card rounded-3xl px-3 py-2 animate-fadeIn">
+            {/* Page Info */}
+            <div className="text-center mb-3">
+                <p className="text-sm font-bold text-gray-700">
+                    Vista Previa - Página {currentPage + 1} de {sections.length}
+                </p>
+                <p className="text-xs text-gray-500">
+                    Números {sections[currentPage]?.startNumber} al {sections[currentPage]?.endNumber}
+                </p>
+            </div>
 
-
-
-            {/* Story Previews */}
-            <div className="mb-4 space-y-4 max-h-[700px] overflow-y-auto">
-                {sections.map((section, index) => (
-                    <div key={section.id} className="flex flex-col items-center">
-                        <p className="text-xs text-gray-500 mb-2 font-semibold">
-                            Imagen {index + 1} - Números {section.startNumber} al {section.endNumber}
-                        </p>
-                        <div
-                            ref={(el) => (storyRefs.current[index] = el)}
-                            className="relative w-[370px] h-[670px] bg-white overflow-hidden shadow-lg"
-                            style={{ aspectRatio: '9/16' }}
+            {/* Story Preview Container */}
+            <div className="relative mb-4 overflow-visible">
+                {/* Navigation Buttons */}
+                {sections.length > 1 && (
+                    <>
+                        <button
+                            onClick={prevPage}
+                            className="absolute left-0 md:-left-2 top-1/2 -translate-y-1/2 z-50 bg-white/90 hover:bg-white text-gray-800 rounded-full w-10 h-10 flex items-center justify-center shadow-lg transition transform hover:scale-110"
+                            title="Anterior"
                         >
+                            <i className="fas fa-chevron-left"></i>
+                        </button>
+                        <button
+                            onClick={nextPage}
+                            className="absolute right-0 md:-right-2 top-1/2 -translate-y-1/2 z-50 bg-white/90 hover:bg-white text-gray-800 rounded-full w-10 h-10 flex items-center justify-center shadow-lg transition transform hover:scale-110"
+                            title="Siguiente"
+                        >
+                            <i className="fas fa-chevron-right"></i>
+                        </button>
+                    </>
+                )}
+
+                {/* Story Preview - Only show current page */}
+                <div className="relative flex flex-col items-center" style={{ minHeight: '670px' }}>
+                    {sections.map((section, index) => (
+                        <div
+                            key={section.id}
+                            className={`absolute top-0 left-1/2 -translate-x-1/2 flex flex-col items-center transition-opacity duration-300 ${
+                                index === currentPage ? 'opacity-100 z-10' : 'opacity-0 z-0 pointer-events-none'
+                            }`}
+                        >
+                            <div
+                                ref={(el) => (storyRefs.current[index] = el)}
+                                className="relative w-[370px] h-[670px] bg-white overflow-hidden shadow-lg"
+                                style={{ aspectRatio: '9/16' }}
+                            >
                             {/* Header with Pet Image */}
                             <div className="relative h-[230px] bg-gradient-to-br from-pink-300 via-purple-300 to-yellow-200 overflow-hidden">
                                 {petImage && (
@@ -122,17 +170,17 @@ export default function StoryPreview({
                                 {/* Overlay with Title */}
                                 <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/40 flex items-end justify-center pb-4">
                                     <div className="bg-white/95 backdrop-blur-sm rounded-full px-6 py-2 shadow-lg">
-                                        <h2 className="text-lg font-bold text-gray-800">
-                                            RIFA SOFIA
+                                        <h2 className="text-lg font-bold text-gray-800 uppercase">
+                                            {raffleName}
                                         </h2>
                                     </div>
                                 </div>
                             </div>
 
                             {/* Price/Info Section */}
-                            <div className="bg-gradient-to-r from-pink-400 to-purple-400 py-3 text-center">
+                            <div className={`bg-gradient-to-r ${theme.colors.header.start} ${theme.colors.header.end} py-3 text-center`}>
                                 <p className="text-white font-bold text-md uppercase">
-                                    VALOR POR NÚMERO $2000
+                                    VALOR POR NÚMERO ${numberPrice.toLocaleString('es-CL')}
                                 </p>
                             </div>
 
@@ -166,7 +214,7 @@ export default function StoryPreview({
 
                             {/* Footer with Prizes */}
                             {prizes.length > 0 && (
-                                <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-r from-pink-400 to-purple-400 p-3">
+                                <div className={`absolute bottom-0 left-0 right-0 bg-gradient-to-r ${theme.colors.header.start} ${theme.colors.header.end} p-3`}>
                                     <div className="text-center">
                                         <p className="text-white text-[10px] font-bold mb-1">PREMIOS:</p>
                                         <div className="space-y-0.5">
@@ -182,10 +230,30 @@ export default function StoryPreview({
                                     </div>
                                 </div>
                             )}
+                            </div>
                         </div>
-                    </div>
-                ))}
+                    ))}
+                </div>
             </div>
+
+            {/* Page Indicators (Dots) */}
+            {sections.length > 1 && (
+                <div className="flex justify-center gap-2 mb-4">
+                    {sections.map((_, index) => (
+                        <button
+                            key={index}
+                            onClick={() => goToPage(index)}
+                            className={`transition-all duration-300 rounded-full ${
+                                index === currentPage
+                                    ? `w-8 h-2 bg-gradient-to-r ${theme.colors.header.start} ${theme.colors.header.end}`
+                                    : 'w-2 h-2 bg-gray-300 hover:bg-gray-400'
+                            }`}
+                            title={`Ir a página ${index + 1}`}
+                        />
+                    ))}
+                </div>
+            )}
+
             <p className="text-sm text-gray-600 mb-4 text-center">
                 {sections.length} {sections.length === 1 ? 'imagen' : 'imágenes'} de 100 números cada una
             </p>
@@ -193,7 +261,7 @@ export default function StoryPreview({
             <button
                 onClick={handleDownloadAll}
                 disabled={isDownloading}
-                className={`w-full bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-700 hover:to-amber-700 text-white px-4 py-3 rounded-xl font-semibold shadow-lg flex items-center justify-center gap-2 transition transform hover:-translate-y-0.5 ${isDownloading ? 'opacity-50 cursor-not-allowed' : ''
+                className={`w-full bg-gradient-to-r ${theme.colors.button.primary} text-white px-4 py-3 rounded-xl font-semibold shadow-lg flex items-center justify-center gap-2 transition transform hover:-translate-y-0.5 ${isDownloading ? 'opacity-50 cursor-not-allowed' : ''
                     }`}
             >
                 {isDownloading ? (

@@ -8,7 +8,8 @@ export default function NumberGrid({
     unsoldNumbers,
     soldNumbers,
     markingMode,
-    onNumberClick
+    onNumberClick,
+    isFinalized = false
 }) {
     const sections = generateNumberSections(totalNumbers);
 
@@ -36,6 +37,7 @@ export default function NumberGrid({
                                     isSold={isSold(num)}
                                     markingMode={markingMode}
                                     onClick={onNumberClick}
+                                    isFinalized={isFinalized}
                                 />
                             ))}
                         </div>

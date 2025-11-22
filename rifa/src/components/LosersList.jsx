@@ -6,17 +6,16 @@ export default function LosersList({ losers, soldNumbers, onRemoveLoser }) {
 
     return (
         <div className="glass-card rounded-3xl p-6 animate-fadeIn">
-            <div className="bg-gradient-to-r from-red-500 to-pink-600 text-white text-center py-3 rounded-xl mb-4">
-                <h6 className="font-bold text-sm uppercase tracking-wide">
-                    <i className="fas fa-times-circle mr-2"></i>Listado de Perdedores
+            <div className="text-black text-center py-3 rounded-xl">
+                <h6 className="font-bold text-md uppercase tracking-wide">
+                    😭 Listado de números al agua
                 </h6>
             </div>
-
             <div className="overflow-hidden rounded-lg border border-gray-200">
                 <table className="w-full">
                     <thead className="bg-gradient-to-r from-red-500 to-pink-600 text-white">
                         <tr>
-                            <th className="py-2 px-3 text-xs font-bold">PERDEDOR NÚMERO</th>
+                            <th className="py-2 px-3 text-xs font-bold">NÚMERO AL AGUA</th>
                             {onRemoveLoser && <th className="py-2 px-3 text-xs font-bold">ACCIÓN</th>}
                         </tr>
                     </thead>

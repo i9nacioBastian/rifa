@@ -1,11 +1,13 @@
 import { useState } from 'react';
+import { themes } from '../config/themes';
 
 export default function BasicConfig({ initialData, onNext }) {
     const [formData, setFormData] = useState({
         name: initialData?.name || '',
         image: initialData?.image || null,
         numberPrice: initialData?.numberPrice || '',
-        totalNumbers: initialData?.totalNumbers || 100
+        totalNumbers: initialData?.totalNumbers || 100,
+        theme: initialData?.theme || 'normal'
     });
 
     const [errors, setErrors] = useState({});
@@ -150,6 +152,33 @@ export default function BasicConfig({ initialData, onNext }) {
                     />
                     <p className="text-xs text-gray-500 mt-1">Entre 10 y 1000 números</p>
                     {errors.totalNumbers && <p className="text-red-500 text-sm mt-1">{errors.totalNumbers}</p>}
+                </div>
+
+                {/* Selector de Tema */}
+                <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-3">
+                        <i className="fas fa-palette mr-2 text-orange-600"></i>Tema de Colores
+                    </label>
+                    <div className="grid grid-cols-3 gap-3">
+                        {Object.entries(themes).map(([key, themeData]) => (
+                            <button
+                                key={key}
+                                type="button"
+                                onClick={() => setFormData({ ...formData, theme: key })}
+                                className={`p-4 rounded-xl border-2 transition transform hover:scale-105 ${
+                                    formData.theme === key
+                                        ? 'border-orange-500 bg-orange-50 shadow-lg'
+                                        : 'border-gray-200 hover:border-orange-300'
+                                }`}
+                            >
+                                <div className="text-center">
+                                    <div className="text-3xl mb-2">{themeData.icon}</div>
+                                    <div className={`h-3 rounded-full bg-gradient-to-r ${themeData.colors.primary.start} ${themeData.colors.primary.end} mb-2`}></div>
+                                    <p className="text-xs font-semibold text-gray-700">{themeData.name}</p>
+                                </div>
+                            </button>
+                        ))}
+                    </div>
                 </div>
 
                 {/* Botón Siguiente */}

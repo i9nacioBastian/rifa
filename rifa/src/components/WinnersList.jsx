@@ -1,9 +1,9 @@
 export default function WinnersList({ winners, onRemoveWinner }) {
     return (
         <div className="glass-card rounded-3xl p-6 animate-fadeIn">
-            <div className="bg-gradient-to-r from-teal-500 to-cyan-600 text-white text-center py-3 rounded-xl mb-4">
-                <h6 className="font-bold text-sm uppercase tracking-wide">
-                    <i className="fas fa-trophy mr-2"></i>Ganadores y Premios
+            <div className="text-black text-center py-3 rounded-xl">
+                <h6 className="font-bold text-md uppercase tracking-wide">
+                    <i className="fas fa-trophy mr-2 text-yellow-500"></i>Ganadores y Premios
                 </h6>
             </div>
 
@@ -11,9 +11,9 @@ export default function WinnersList({ winners, onRemoveWinner }) {
                 <table className="w-full">
                     <thead className="bg-gradient-to-r from-teal-500 to-cyan-600 text-white">
                         <tr>
-                            <th className="py-2 px-3 text-xs font-bold">GANADOR</th>
-                            <th className="py-2 px-3 text-xs font-bold">PREMIO</th>
-                            {onRemoveWinner && <th className="py-2 px-3 text-xs font-bold">ACCIÓN</th>}
+                            <th className="py-2 px-3 text-xs font-bold text-center">NÚMERO GANADOR</th>
+                            <th className="py-2 px-3 text-xs font-bold text-center">PREMIO</th>
+                            {onRemoveWinner && <th className="py-2 px-3 text-xs font-bold text-center">ACCIÓN</th>}
                         </tr>
                     </thead>
                     <tbody className="text-sm">

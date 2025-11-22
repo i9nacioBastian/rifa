@@ -1,7 +1,10 @@
 import { NavLink } from 'react-router-dom';
 import { useState, useEffect } from 'react';
+import { useTheme } from '../context/ThemeContext';
+import ThemeSelector from './ThemeSelector';
 
 export default function SideNav({ isFinalized, isMobileOpen, setIsMobileOpen, onNewRaffle }) {
+    const { theme } = useTheme();
     const [isCollapsed, setIsCollapsed] = useState(false);
 
     // Update parent container margin when collapsed state changes (desktop only)
@@ -62,7 +65,7 @@ export default function SideNav({ isFinalized, isMobileOpen, setIsMobileOpen, on
                 {/* Toggle Button (Desktop only) */}
                 <button
                     onClick={() => setIsCollapsed(!isCollapsed)}
-                    className="hidden md:flex absolute -right-3 top-6 bg-orange-500 hover:bg-orange-600 text-white rounded-full w-6 h-6 items-center justify-center shadow-md transition z-50"
+                    className={`hidden md:flex absolute -right-3 top-6 ${theme.colors.primary.bg} text-white rounded-full w-6 h-6 items-center justify-center shadow-md transition z-50`}
                     title={isCollapsed ? 'Expandir' : 'Colapsar'}
                 >
                     <i className={`fas ${isCollapsed ? 'fa-chevron-right' : 'fa-chevron-left'} text-xs`}></i>
@@ -74,14 +77,14 @@ export default function SideNav({ isFinalized, isMobileOpen, setIsMobileOpen, on
                         {isCollapsed ? (
                               <img
                                     src="./logo_rifa.png"
-                                    alt="DesignWEBIRG"
+                                    alt="Logo"
                                     className="w-32 mx-auto -mt-10 md:mt-1"
                                 />
                         ) : (
                             <div className="text-center">
                                 <img
                                     src="./logo_rifa.png"
-                                    alt="DesignWEBIRG"
+                                    alt="Logo"
                                     className="w-32 mx-auto -mt-10 md:mt-1"
                                 />
                             </div>
@@ -100,7 +103,7 @@ export default function SideNav({ isFinalized, isMobileOpen, setIsMobileOpen, on
                                     </>
                                 ) : (
                                     <>
-                                        <i className="fas fa-clock text-orange-500 mr-1"></i>
+                                        <i className={`fas fa-clock ${theme.colors.primary.text} mr-1`}></i>
                                         Rifa Activa
                                     </>
                                 )}
@@ -116,14 +119,15 @@ export default function SideNav({ isFinalized, isMobileOpen, setIsMobileOpen, on
                             key={item.path}
                             to={item.path}
                             onClick={handleNavClick}
-                            className={({ isActive }) =>
-                                `flex items-center px-4 py-3 transition ${item.disabled
+                            className={({ isActive }) => {
+                                const colorName = theme.colors.primary.text.split('-')[1];
+                                return `flex items-center px-4 py-3 transition ${item.disabled
                                     ? 'opacity-50 cursor-not-allowed pointer-events-none'
                                     : isActive
-                                        ? 'bg-orange-50 text-orange-600 border-r-4 border-orange-600'
-                                        : 'text-gray-600 hover:bg-gray-50 hover:text-orange-500'
+                                        ? `bg-${colorName}-50 ${theme.colors.primary.text} border-r-4 ${theme.colors.primary.border}`
+                                        : `text-gray-600 hover:bg-gray-50 hover:${theme.colors.primary.text}`
                                 }`
-                            }
+                            }}
                             title={isCollapsed ? item.label : ''}
                         >
                             <i className={`fas ${item.icon} text-xl ${isCollapsed ? '' : 'mr-4'}`}></i>
@@ -132,6 +136,13 @@ export default function SideNav({ isFinalized, isMobileOpen, setIsMobileOpen, on
                             )}
                         </NavLink>
                     ))}
+
+                    {/* Theme Selector */}
+                    {/* {!isCollapsed && (
+                        <div className="px-4 mt-4">
+                            <ThemeSelector />
+                        </div>
+                    )} */}
 
                     {/* Nueva Rifa Button */}
                     <div className="px-4 mt-4">
@@ -160,12 +171,12 @@ export default function SideNav({ isFinalized, isMobileOpen, setIsMobileOpen, on
                                 <>
                                     Desarrollado con <i className="fa fa-heart text-red-500 animate-pulse"></i> por{' '}
                                     <a
-                                        href="https://designwebirg.com/"
+                                        href="https://humancreativelab.cl/"
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         className="text-black font-bold hover:text-purple-300 transition"
                                     >
-                                        DesignWebIRG.com
+                                        HumanCreativeLab.cl
                                     </a>
                                 </>
                             </p>

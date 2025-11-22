@@ -179,6 +179,7 @@ export default function RaffleManager({
                             unsoldNumbers={raffleData.unsoldNumbers}
                             soldNumbers={raffleData.soldNumbers}
                             markingMode={raffleData.markingMode}
+                            isFinalized={isFinalized}
                             onNumberClick={(num) => {
                                 const newUnsold = new Set(raffleData.unsoldNumbers);
                                 if (newUnsold.has(num)) {
@@ -256,6 +257,8 @@ export default function RaffleManager({
                         unsoldNumbers={raffleData.unsoldNumbers}
                         soldNumbers={raffleData.soldNumbers}
                         losers={raffleData.losers}
+                        raffleName={config.name}
+                        numberPrice={config.numberPrice}
                     />
                 </ModalBody>
             </Modal>

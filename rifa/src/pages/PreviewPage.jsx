@@ -21,6 +21,8 @@ export default function PreviewPage({ config, raffleData }) {
                 unsoldNumbers={raffleData.unsoldNumbers}
                 soldNumbers={raffleData.soldNumbers}
                 losers={raffleData.losers}
+                raffleName={config.name}
+                numberPrice={config.numberPrice}
             />
         </div>
     );

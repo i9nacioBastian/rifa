@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { ThemeProvider, useTheme } from './context/ThemeContext';
 import RaffleWizard from './components/RaffleWizard';
 import RaffleHeader from './components/RaffleHeader';
 import Footer from './components/Footer';
@@ -13,6 +14,7 @@ import { loadRaffleConfig, saveRaffleConfig, loadRaffleData, saveRaffleData, cle
 import './index.css';
 
 function RaffleApp() {
+  const { changeTheme } = useTheme();
   const [raffleConfig, setRaffleConfig] = useState(null);
   const [raffleData, setRaffleData] = useState({
     winners: [],
@@ -37,6 +39,11 @@ function RaffleApp() {
       setRaffleConfig(config);
       setShowWizard(false);
 
+      // Apply saved theme if exists
+      if (config.theme) {
+        changeTheme(config.theme);
+      }
+
       if (data) {
         setRaffleData({
           ...data,
@@ -49,7 +56,7 @@ function RaffleApp() {
         }));
       }
     }
-  }, []);
+  }, [changeTheme]);
 
   // Save raffle data whenever it changes
   useEffect(() => {
@@ -70,6 +77,12 @@ function RaffleApp() {
       ...prev,
       prizes: config.prizes
     }));
+
+    // Apply theme from wizard
+    if (config.theme) {
+      changeTheme(config.theme);
+    }
+
     setShowWizard(false);
   };
 
@@ -109,6 +122,19 @@ function RaffleApp() {
 
   const handleRaffleDataChange = (newData) => {
     setRaffleData(newData);
+  };
+
+  const handleEditConfig = (updatedConfig) => {
+    const newConfig = {
+      ...raffleConfig,
+      name: updatedConfig.name,
+      image: updatedConfig.image,
+      numberPrice: updatedConfig.numberPrice,
+      totalNumbers: updatedConfig.totalNumbers,
+      theme: updatedConfig.theme
+    };
+    setRaffleConfig(newConfig);
+    saveRaffleConfig(newConfig);
   };
 
   const handleNewRaffle = () => {
@@ -162,6 +188,7 @@ function RaffleApp() {
                   raffleData={raffleData}
                   onRaffleDataChange={handleRaffleDataChange}
                   onFinalize={handleFinalize}
+                  onEditConfig={handleEditConfig}
                 />
               }
             />
@@ -279,7 +306,9 @@ function RaffleApp() {
 export default function App() {
   return (
     <BrowserRouter>
-      <RaffleApp />
+      <ThemeProvider>
+        <RaffleApp />
+      </ThemeProvider>
     </BrowserRouter>
   );
 }

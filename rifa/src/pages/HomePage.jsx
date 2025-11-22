@@ -1,11 +1,14 @@
 import { useState } from 'react';
+import { useTheme } from '../context/ThemeContext';
 import NumberGrid from '../components/NumberGrid';
 import WinnersList from '../components/WinnersList';
 import LosersList from '../components/LosersList';
+import EditConfigModal from '../components/EditConfigModal';
 import Modal, { ModalHeader, ModalBody, ModalFooter } from '../components/Modal';
 import { shuffle, getAvailableNumbers, findParticipantName } from '../utils/raffleUtils';
 
-export default function HomePage({ config, raffleData, onRaffleDataChange, onFinalize }) {
+export default function HomePage({ config, raffleData, onRaffleDataChange, onFinalize, onEditConfig }) {
+    const { theme } = useTheme();
     const isFinalized = config.status === 'finalized';
 
     // Raffle execution states
@@ -18,6 +21,9 @@ export default function HomePage({ config, raffleData, onRaffleDataChange, onFin
     // Add Prize State
     const [showAddPrizeModal, setShowAddPrizeModal] = useState(false);
     const [newPrizeName, setNewPrizeName] = useState('');
+
+    // Edit Config State
+    const [showEditConfigModal, setShowEditConfigModal] = useState(false);
 
     const handleRunRaffle = () => {
         if (raffleData.prizes.length === 0) {
@@ -173,121 +179,132 @@ export default function HomePage({ config, raffleData, onRaffleDataChange, onFin
 
     return (
         <div className="pb-20 px-3 md:px-4">
-            {/* Header Info */}
-            <div className="glass-card rounded-md p-6 mb-6 animate-fadeIn relative overflow-hidden">
-                <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-gray-700 via-gray-800 to-gray-800"></div>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {/* Header Info */}
+                <div className="glass-card rounded-2xl p-6 mb-6 animate-fadeIn relative overflow-hidden">
 
-                <div className="flex justify-between items-start mb-4">
-                    <div>
-                        <h2 className="text-2xl font-bold text-gray-800 mb-1">{config.raffleName}</h2>
-                        <p className="text-gray-500 text-sm flex items-center">
-                            <i className="fas fa-ticket-alt mr-2 text-orange-500"></i>
-                            {config.totalNumbers} Números
-                        </p>
-                    </div>
-                    <div className="text-right">
-                        <div className="text-3xl font-bold text-orange-600">${config.numberPrice}</div>
-                        <div className="text-xs text-gray-400 uppercase tracking-wider">VALOR NÚMERO</div>
-                    </div>
-                </div>
-
-                {/* Stats Row */}
-                <div className="grid grid-cols-3 gap-3 mb-6">
-                    <div className="bg-orange-50 rounded-xl p-3 text-center border border-orange-100">
-                        <div className="text-2xl font-bold text-orange-600">{Object.keys(raffleData.soldNumbers || {}).length}</div>
-                        <div className="text-xs text-gray-500 font-medium">Vendidos</div>
-                    </div>
-                    <div className="bg-green-50 rounded-xl p-3 text-center border border-green-100">
-                        <div className="text-2xl font-bold text-green-600">
-                            {config.totalNumbers - Object.keys(raffleData.soldNumbers || {}).length}
-                        </div>
-                        <div className="text-xs text-gray-500 font-medium">Disponibles</div>
-                    </div>
-                    <div className="bg-purple-50 rounded-xl p-3 text-center border border-purple-100">
-                        <div className="text-2xl font-bold text-purple-600">{raffleData.winners.length}</div>
-                        <div className="text-xs text-gray-500 font-medium">Ganadores</div>
-                    </div>
-                </div>
-
-                {/* Action Buttons */}
-                <div className="flex gap-3">
-                    {!isFinalized ? (
-                        <button
-                            onClick={onFinalize}
-                            className="flex-1 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white py-3 rounded-xl font-bold shadow-lg shadow-green-200 transition transform hover:-translate-y-0.5 flex items-center justify-center gap-2"
-                        >
-                            <i className="fas fa-flag-checkered"></i>
-                            Finalizar Rifa
-                        </button>
-                    ) : (
-                        <>
-                            <button
-                                onClick={handleRunRaffle}
-                                disabled={noPrizesLeft}
-                                className={`flex-1 py-3 rounded-xl font-bold shadow-lg transition transform hover:-translate-y-0.5 flex items-center justify-center gap-2 ${noPrizesLeft
-                                    ? 'bg-gray-300 text-gray-500 cursor-not-allowed shadow-none'
-                                    : 'bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700 text-white shadow-purple-200'
-                                    }`}
-                            >
-                                <i className="fas fa-trophy"></i>
-                                {noPrizesLeft ? 'Sin Premios' : 'Sorteo'}
-                            </button>
-                            <button
-                                onClick={handleRunLosers}
-                                disabled={noPrizesLeft}
-                                className={`flex-1 py-3 rounded-xl font-bold shadow-lg transition transform hover:-translate-y-0.5 flex items-center justify-center gap-2 ${noPrizesLeft
-                                    ? 'bg-gray-300 text-gray-500 cursor-not-allowed shadow-none'
-                                    : 'bg-gradient-to-r from-red-500 to-pink-600 hover:from-red-600 hover:to-pink-700 text-white shadow-red-200'
-                                    }`}
-                            >
-                                <i className="fas fa-trash-alt"></i>
-                                Eliminar
-                            </button>
-                        </>
-                    )}
-                </div>
-            </div>
-
-            {/* Prizes - Read Only */}
-            <div className="glass-card rounded-3xl p-4 mb-4">
-                <h3 className="text-sm font-bold text-gray-700 mb-3 flex items-center justify-between">
-                    <span><i className="fas fa-gift mr-2 text-teal-600"></i>PREMIOS</span>
-                    {isFinalized && (
-                        <button
-                            onClick={() => setShowAddPrizeModal(true)}
-                            className="text-xs bg-teal-100 text-teal-700 px-2 py-1 rounded hover:bg-teal-200 transition"
-                        >
-                            <i className="fas fa-plus mr-1"></i>Agregar
-                        </button>
-                    )}
-                    {!isFinalized && (
-                        <span className="text-xs text-gray-500">
-                            <i className="fas fa-info-circle mr-1"></i>Edita en la pestaña Premios
-                        </span>
-                    )}
-                </h3>
-                <div className="space-y-2">
-                    {raffleData.prizes.map((prize, index) => {
-                        const isUsed = raffleData.winners.some(w => w.prize === prize);
-                        return (
-                            <div
-                                key={index}
-                                className={`flex items-center gap-2 p-2 rounded-lg ${isUsed ? 'bg-gray-100 opacity-60' : 'bg-teal-50'
-                                    }`}
-                            >
-                                <span className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${isUsed ? 'bg-gray-400 text-white' : 'bg-teal-500 text-white'
-                                    }`}>
-                                    {index + 1}
-                                </span>
-                                <span className={`flex-1 text-sm ${isUsed ? 'line-through text-gray-500' : 'text-gray-700'}`}>
-                                    {prize}
-                                </span>
-                                {isUsed && <i className="fas fa-check text-green-600"></i>}
+                    <div className="flex justify-between items-start mb-4">
+                        <div className="flex-1">
+                            <div className="flex items-center gap-2 mb-1">
+                                <h2 className="text-2xl font-bold text-gray-800">{config.name}</h2>
+                                <button
+                                    onClick={() => setShowEditConfigModal(true)}
+                                    className="text-gray-400 hover:text-blue-600 transition"
+                                    title="Editar configuración"
+                                >
+                                    <i className="fas fa-edit text-sm"></i>
+                                </button>
                             </div>
-                        );
-                    })}
+                            <p className="text-gray-500 text-sm flex items-center">
+                                <i className="fas fa-ticket-alt mr-2 text-orange-500"></i>
+                                {config.totalNumbers} Números
+                            </p>
+                        </div>
+                        <div className="text-right">
+                            <div className={`text-3xl font-bold ${theme.colors.primary.text}`}>${config.numberPrice.toLocaleString('es-CL')}</div>
+                            <div className="text-xs text-gray-400 uppercase tracking-wider">VALOR NÚMERO</div>
+                        </div>
+                    </div>
+
+                    {/* Stats Row */}
+                    <div className="grid grid-cols-3 gap-3 mb-6">
+                        <div className={`bg-${theme.colors.primary.text.split('-')[1]}-50 rounded-xl p-3 text-center border border-${theme.colors.primary.text.split('-')[1]}-100`}>
+                            <div className={`text-2xl font-bold ${theme.colors.primary.text}`}>{Object.keys(raffleData.soldNumbers || {}).length}</div>
+                            <div className="text-xs text-gray-500 font-medium">Vendidos</div>
+                        </div>
+                        <div className="bg-green-50 rounded-xl p-3 text-center border border-green-100">
+                            <div className="text-2xl font-bold text-green-600">
+                                {config.totalNumbers - Object.keys(raffleData.soldNumbers || {}).length}
+                            </div>
+                            <div className="text-xs text-gray-500 font-medium">Disponibles</div>
+                        </div>
+                        <div className="bg-purple-50 rounded-xl p-3 text-center border border-purple-100">
+                            <div className="text-2xl font-bold text-purple-600">{raffleData.winners.length}</div>
+                            <div className="text-xs text-gray-500 font-medium">Ganadores</div>
+                        </div>
+                    </div>
+
+                    {/* Action Buttons */}
+                    <div className="flex gap-3">
+                        {!isFinalized ? (
+                            <button
+                                onClick={onFinalize}
+                                className={`flex-1 bg-gradient-to-r ${theme.colors.button.success} text-white py-3 rounded-xl font-bold shadow-lg transition transform hover:-translate-y-0.5 flex items-center justify-center gap-2`}
+                            >
+                                <i className="fas fa-flag-checkered"></i>
+                                Finalizar Rifa
+                            </button>
+                        ) : (
+                            <>
+                                <button
+                                    onClick={handleRunRaffle}
+                                    disabled={noPrizesLeft}
+                                    className={`flex-1 py-3 rounded-xl font-bold shadow-lg transition transform hover:-translate-y-0.5 flex items-center justify-center gap-2 ${noPrizesLeft
+                                        ? 'bg-gray-300 text-gray-500 cursor-not-allowed shadow-none'
+                                        : `bg-gradient-to-r ${theme.colors.button.primary} text-white`
+                                        }`}
+                                >
+                                    <i className="fas fa-trophy"></i>
+                                    {noPrizesLeft ? 'Sin Premios' : 'Sorteo'}
+                                </button>
+                                <button
+                                    onClick={handleRunLosers}
+                                    disabled={noPrizesLeft}
+                                    className={`flex-1 py-3 rounded-xl font-bold shadow-lg transition transform hover:-translate-y-0.5 flex items-center justify-center gap-2 ${noPrizesLeft
+                                        ? 'bg-gray-300 text-gray-500 cursor-not-allowed shadow-none'
+                                        : `bg-gradient-to-r ${theme.colors.button.danger} text-white`
+                                        }`}
+                                >
+                                    <i className="fas fa-refresh"></i>
+                                    Número al agua
+                                </button>
+                            </>
+                        )}
+                    </div>
+                </div>
+
+                {/* Prizes - Read Only */}
+                <div className="glass-card rounded-3xl p-4 mb-4">
+                    <h3 className="text-sm font-bold text-gray-700 mb-3 flex items-center justify-between">
+                        <span><i className="fas fa-gift mr-2 text-teal-600"></i>PREMIOS</span>
+                        {isFinalized && (
+                            <button
+                                onClick={() => setShowAddPrizeModal(true)}
+                                className="text-xs bg-teal-100 text-teal-700 px-2 py-1 rounded hover:bg-teal-200 transition"
+                            >
+                                <i className="fas fa-plus mr-1"></i>Agregar
+                            </button>
+                        )}
+                        {!isFinalized && (
+                            <span className="text-xs text-gray-500">
+                                <i className="fas fa-info-circle mr-1"></i>Edita en la pestaña Premios
+                            </span>
+                        )}
+                    </h3>
+                    <div className="space-y-2">
+                        {raffleData.prizes.map((prize, index) => {
+                            const isUsed = raffleData.winners.some(w => w.prize === prize);
+                            return (
+                                <div
+                                    key={index}
+                                    className={`flex items-center gap-2 p-2 rounded-lg ${isUsed ? 'bg-gray-100 opacity-60' : 'bg-teal-50'
+                                        }`}
+                                >
+                                    <span className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${isUsed ? 'bg-gray-400 text-white' : 'bg-teal-500 text-white'
+                                        }`}>
+                                        {index + 1}
+                                    </span>
+                                    <span className={`flex-1 text-sm ${isUsed ? 'line-through text-gray-500' : 'text-gray-700'}`}>
+                                        {prize}
+                                    </span>
+                                    {isUsed && <i className="fas fa-check text-green-600"></i>}
+                                </div>
+                            );
+                        })}
+                    </div>
                 </div>
             </div>
+
 
             {/* Number Grid */}
             <div className="glass-card rounded-3xl p-4">
@@ -305,6 +322,7 @@ export default function HomePage({ config, raffleData, onRaffleDataChange, onFin
                     unsoldNumbers={raffleData.unsoldNumbers}
                     soldNumbers={raffleData.soldNumbers}
                     markingMode={raffleData.markingMode}
+                    isFinalized={isFinalized}
                     onNumberClick={(num) => {
                         if (!isFinalized && raffleData.markingMode) {
                             const newUnsold = new Set(raffleData.unsoldNumbers);
@@ -320,18 +338,16 @@ export default function HomePage({ config, raffleData, onRaffleDataChange, onFin
             </div>
 
             {/* Winners List */}
-            {raffleData.winners.length > 0 && (
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <div className="mt-4">
                     <WinnersList winners={raffleData.winners} onRemoveWinner={handleRemoveWinner} />
                 </div>
-            )}
 
-            {/* Losers List */}
-            {raffleData.losers.length > 0 && (
+                {/* Losers List */}
                 <div className="mt-4">
                     <LosersList losers={raffleData.losers} soldNumbers={raffleData.soldNumbers} onRemoveLoser={handleRemoveLoser} />
                 </div>
-            )}
+            </div>
 
             {/* Loading Modal - Animal Tombola Animation */}
             <Modal isOpen={loadingModal} onClose={() => { }}>
@@ -502,6 +518,15 @@ export default function HomePage({ config, raffleData, onRaffleDataChange, onFin
                     </button>
                 </ModalFooter>
             </Modal>
+
+            {/* Edit Config Modal */}
+            <EditConfigModal
+                isOpen={showEditConfigModal}
+                onClose={() => setShowEditConfigModal(false)}
+                config={config}
+                onSave={onEditConfig}
+                soldNumbers={raffleData.soldNumbers}
+            />
         </div>
     );
 }

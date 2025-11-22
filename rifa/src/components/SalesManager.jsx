@@ -1,5 +1,7 @@
 import { useState } from 'react';
+import { useTheme } from '../context/ThemeContext';
 import Modal, { ModalHeader, ModalBody, ModalFooter } from './Modal';
+import { generateNumberSections } from '../utils/raffleUtils';
 
 export default function SalesManager({
     totalNumbers,
@@ -8,6 +10,7 @@ export default function SalesManager({
     winners,
     losers
 }) {
+    const { theme } = useTheme();
     const [showModal, setShowModal] = useState(false);
     const [selectedNumbers, setSelectedNumbers] = useState([]);
     const [buyerName, setBuyerName] = useState('');
@@ -85,6 +88,8 @@ export default function SalesManager({
         ...buyer
     })).sort((a, b) => a.number - b.number);
 
+    const sections = generateNumberSections(totalNumbers);
+
     const generateNumbers = () => {
         const numbers = [];
         for (let i = 1; i <= totalNumbers; i++) {
@@ -96,8 +101,8 @@ export default function SalesManager({
     const numbers = generateNumbers();
 
     return (
-        <div className="glass-card rounded-3xl p-6 animate-fadeIn">
-            <div className="bg-gradient-to-r from-gray-800 to-gray-700 text-white text-center py-3 rounded-xl mb-4">
+        <div className="glass-card rounded-3xl px-4 animate-fadeIn">
+            <div className={`bg-gradient-to-r mt-2 ${theme.colors.header.start} ${theme.colors.header.end} text-white text-center py-3 rounded-xl mb-4`}>
                 <h6 className="font-bold text-sm uppercase tracking-wide">
                     <i className="fas fa-shopping-cart mr-2"></i>Gestión de Ventas
                 </h6>
@@ -135,41 +140,52 @@ export default function SalesManager({
 
             {/* Numbers Grid */}
             {selectionMode && (
-                <div className="mb-4 p-4 bg-gray-50 rounded-xl max-h-[410px] overflow-y-auto">
-                    <div className="grid grid-cols-10 gap-2">
-                        {numbers.map((num) => {
-                            const isSold = soldNumbers[num];
-                            const isSelected = selectedNumbers.includes(num);
-                            const isAvailable = isNumberAvailable(num);
-                            const isWinner = winners.some(w => w.number === num);
-                            const isLoser = losers.includes(num);
+                <div className="mb-4 bg-gray-50 rounded-xl  max-h-[560px] lg:max-h-[700px] overflow-y-auto">
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        {sections.map((section) => (
+                            <div key={section.id} className="space-y-2">
+                                <h3 className="text-sm uppercase font-semibold text-gray-600">
+                                    Números {section.startNumber} - {section.endNumber}
+                                </h3>
+                                <div className="overflow-x-auto pb-2 px-2 pt-2">
+                                    <div className="grid grid-cols-10 gap-2 min-w-max">
+                                        {section.numbers.map((num) => {
+                                            const isSold = soldNumbers[num];
+                                            const isSelected = selectedNumbers.includes(num);
+                                            const isAvailable = isNumberAvailable(num);
+                                            const isWinner = winners.some(w => w.number === num);
+                                            const isLoser = losers.includes(num);
 
-                            let className = ' w-[30px] h-[35px] sm:w-[35px] sm:h-[35px] lg:w-[40px] lg:h-[40px] 2xl:w-[55px] 2xl:h-[55px] rounded-full flex items-center justify-center text-[14px] font-bold transition-all cursor-pointer';
+                                            let className = 'w-[30px] h-[35px] sm:w-[35px] sm:h-[35px] lg:w-[40px] lg:h-[40px] 2xl:w-[45px] 2xl:h-[45px] rounded-full flex items-center justify-center text-[13px] lg:text-md 2xl:text-lg font-bold transition-all cursor-pointer';
 
-                            if (isWinner) {
-                                className += ' bg-gradient-to-br from-emerald-500 to-green-600 text-white';
-                            } else if (isLoser) {
-                                className += ' bg-gradient-to-br from-red-500 to-pink-600 text-white';
-                            } else if (isSold) {
-                                className += ' bg-gradient-to-br from-blue-500 to-indigo-600 text-white';
-                            } else if (isSelected) {
-                                className += ' bg-gradient-to-br from-orange-500 to-amber-500 text-white ring-2 ring-orange-300';
-                            } else if (isAvailable) {
-                                className += ' bg-white border-2 border-gray-300 text-gray-700 hover:border-blue-500';
-                            } else {
-                                className += ' bg-gray-300 text-gray-500 cursor-not-allowed';
-                            }
+                                            if (isWinner) {
+                                                className += ` bg-gradient-to-br ${theme.colors.winner.start} ${theme.colors.winner.end} text-white`;
+                                            } else if (isLoser) {
+                                                className += ` bg-gradient-to-br ${theme.colors.loser.start} ${theme.colors.loser.end} text-white`;
+                                            } else if (isSold) {
+                                                className += ` bg-gradient-to-br ${theme.colors.sold.start} ${theme.colors.sold.end} text-white`;
+                                            } else if (isSelected) {
+                                                className += ` bg-gradient-to-br ${theme.colors.secondary.start} ${theme.colors.secondary.end} text-white ring-2`;
+                                            } else if (isAvailable) {
+                                                className += ' bg-white border-2 border-gray-300 text-gray-700 hover:border-blue-500';
+                                            } else {
+                                                className += ' bg-gray-300 text-gray-500 cursor-not-allowed';
+                                            }
 
-                            return (
-                                <div
-                                    key={num}
-                                    className={className}
-                                    onClick={() => handleNumberClick(num)}
-                                >
-                                    {num}
+                                            return (
+                                                <div
+                                                    key={num}
+                                                    className={className}
+                                                    onClick={() => handleNumberClick(num)}
+                                                >
+                                                    {num}
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
                                 </div>
-                            );
-                        })}
+                            </div>
+                        ))}
                     </div>
                 </div>
             )}
@@ -178,7 +194,7 @@ export default function SalesManager({
             {selectedNumbers.length > 0 && (
                 <button
                     onClick={openAssignModal}
-                    className="w-full mb-4 bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-700 hover:to-amber-700 text-white px-4 py-3 rounded-xl font-semibold shadow-lg flex items-center justify-center gap-2 transition transform hover:-translate-y-0.5 animate-fadeIn"
+                    className={`w-full mb-4 bg-gradient-to-r ${theme.colors.button.primary} text-white px-4 py-3 rounded-xl font-semibold shadow-lg flex items-center justify-center gap-2 transition transform hover:-translate-y-0.5 animate-fadeIn`}
                 >
                     <i className="fas fa-user-plus"></i>
                     Asignar {selectedNumbers.length} {selectedNumbers.length === 1 ? 'Número' : 'Números'}
@@ -190,7 +206,7 @@ export default function SalesManager({
                     onClick={toggleSelectionMode}
                     className={`w-md px-4 py-3 rounded-xl font-semibold shadow-lg flex items-center justify-center gap-2 transition transform hover:-translate-y-0.5 ${selectionMode
                         ? 'bg-gradient-to-r from-gray-500 to-gray-500 hover:from-gray-600 hover:to-gray-600 text-white'
-                        : 'bg-gradient-to-r from-gray-800 to-gray-700 hover:from-blue-600 hover:to-blue-700 text-white'
+                        : `bg-gradient-to-r ${theme.colors.button.secondary} text-white`
                         }`}
                 >
                     <i className={`fas ${selectionMode ? 'fa-times-circle' : 'fa-hand-pointer'}`}></i>
@@ -201,7 +217,7 @@ export default function SalesManager({
             <div className="overflow-hidden rounded-lg border border-gray-200">
                 <div className="max-h-96 overflow-y-auto">
                     <table className="w-full">
-                        <thead className="bg-gradient-to-r from-gray-800 to-gray-700 text-white sticky top-0 z-10">
+                        <thead className={`bg-gradient-to-r ${theme.colors.header.start} ${theme.colors.header.end} text-white sticky top-0 z-10`}>
                             <tr>
                                 <th className="py-2 px-3 text-xs font-bold">N°</th>
                                 <th className="py-2 px-3 text-xs font-bold">COMPRADOR</th>
@@ -288,7 +304,7 @@ export default function SalesManager({
                     </button>
                     <button
                         onClick={handleAssignSale}
-                        className="bg-gradient-to-r from-gray-800 to-gray-700 hover:from-blue-600 hover:to-blue-700 text-white px-6 py-2 rounded-lg font-semibold transition"
+                        className={`bg-gradient-to-r ${theme.colors.button.secondary} text-white px-6 py-2 rounded-lg font-semibold transition`}
                     >
                         Asignar
                     </button>
